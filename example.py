@@ -21,7 +21,8 @@ class model:
             self.add()
         elif self.op == 'subtract':
             self.subtract()
-        pv.update_view()
+        
+        pv.update()
 
 
 # Create a view

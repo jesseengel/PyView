@@ -63,6 +63,94 @@ class TextCtrl(wx.TextCtrl):
 
 
 
+class Plot(object):
+    def __init__(self, x_var='', y_var='', plot_type='plot', axes_params=None, dimensions=(6.0,5.0), dpi=100 ):
+        """ Self updating plot """
+        self.plot_type = plot_type
+        self.name = 'plot_'+x_var+'_'+y_var
+        self.x_var = x_var
+        self.y_var = y_var
+
+        self.fig = Figure(dimensions, dpi=dpi)
+        self.axes = self.fig.add_subplot(111)
+
+        if axes_params is None:
+            axes_params = dict(title='Awesome graph',
+                               xlabel='X',
+                               ylabel='Y')
+
+
+
+        # self.canvas.mpl_connect('pick_event', self.on_pick)
+
+        # Create the navigation toolbar, tied to the canvas
+        # pylab.setp(self.axes.get_xticklabels(), fontsize=8)
+        # pylab.setp(self.axes.get_yticklabels(), fontsize=8)
+
+        # plot the data as a line series, and save the reference 
+        # to the plotted line series
+        #
+        self.plot_data = getattr(self.axes, plot_type)(np.array([]), 'yo-')[0]
+
+        # anecdote: axes.grid assumes b=True if any other flag is
+        # given even if b is set to False.
+        # so just passing the flag into the first statement won't
+        # work.
+        #
+        if 'log' in self.plot_type:
+            self.axes.yaxis.grid(b=True, which='minor', color=(.2,.2,.2), linestyle=':')
+            self.axes.grid(b=True, which='major', color='gray', linestyle=':')
+            self.axes.minorticks_on()
+        else:
+            self.axes.grid(b=True, which='major', color='gray')
+        pylab.setp(self.axes, axis_bgcolor=[.05,.05,.05])
+
+        # self.axes.grid(True, color='gray')
+        # Using setp here is convenient, because get_xticklabels
+        # returns a list over which one needs to explicitly 
+        # iterate, and setp already handles this.
+        #  
+        pylab.setp(self.axes.get_xticklabels(), visible=True)
+        pylab.setp(self.axes, **axes_params)
+        # pylab.tight_layout()
+
+
+    def _inherit(self, parent):
+        self.parent = parent
+        self.canvas = FigCanvas(self.parent, -1, self.fig)
+        # self.toolbar = NavigationToolbar(self.canvas)
+
+
+    def draw(self, x, y):
+        """ Redraws the plot
+        """
+        if x and y:
+            if 'log' in self.plot_type:
+                try:
+                    ymin = round(min(y[y>0]), 0) - 1
+                except ValueError:
+                    ymin = 1
+            else:
+                ymin = round(min(y), 0) - 1
+
+            ymax = round(max(y), 0) + 1
+            xmin = round(min(x), 0) - 1
+            xmax = round(max(x), 0) + 1
+
+
+            self.axes.set_xbound(lower=xmin, upper=xmax)
+            self.axes.set_ybound(lower=ymin, upper=ymax)
+            
+            self.plot_data.set_xdata(x)
+            self.plot_data.set_ydata(y)
+            
+            try:
+                self.canvas.draw()
+            except ValueError:
+                print 'Woops!\nSome drawing SNAFU happened.\n'
+
+
+
 
 class View(wx.Frame):
     """An object to quickly construct a GUI view from a list of pyview objects"""
@@ -78,6 +166,7 @@ class View(wx.Frame):
         self.buttons = []
         self.textctrls = []
         self.combos = []
+        self.plots = []
 
         ### Create the elements ###
 
@@ -97,6 +186,9 @@ class View(wx.Frame):
 
                 if isinstance(obj, Button):
                     self.buttons.append(obj)
+
+                if isinstance(obj, Plot):
+                    self.plots.append(obj)
 
         
         ###### Arrange the elements #######
@@ -121,6 +213,18 @@ class View(wx.Frame):
 
                 if isinstance(obj, Button):
                     getattr(self, row_name).Add(getattr(self, obj.name), border=5, flag=std_flag)
+
+                if isinstance(obj, Plot):
+                    # hbox_name = 'hbox_'+obj.name
+                    # vbox_name = 'vbox_'+obj.name
+                    # setattr(self, hbox_name, wx.BoxSizer(wx.HORIZONTAL))
+                    # setattr(self, vbox_name, wx.BoxSizer(wx.VERTICAL))
+
+                    getattr(self, row_name).Add(getattr(self, obj.name).canvas, 1, flag=wx.LEFT | wx.TOP | wx.GROW)
+                    # getattr(self, vbox_name).Add(getattr(self, obj.name).toolbar, 1, flag=wx.CENTER | wx.EXPAND)
+                    # getattr(self, hbox_name).Add(getattr(self, vbox_name))
+                    # getattr(self, row_name).Add(getattr(self, hbox_name))
+
 
             self.vbox.Add(getattr(self, row_name), 0, flag=wx.ALIGN_LEFT | wx.TOP | wx.EXPAND)
 
@@ -181,8 +285,11 @@ class Controller(object):
 
         # Textctrl Bindings
         for obj in self.view.textctrls:
-            print obj.var_name, getattr(self.model, obj.var_name)
+            # print obj.var_name, getattr(self.model, obj.var_name)
             getattr(self.view, obj.name).SetValue(str( getattr(self.model, obj.var_name) ))
+
+        for obj in self.view.plots:
+            obj.draw(getattr(self.model, obj.x_var), getattr(self.model, obj.y_var))
 
 
 
@@ -202,111 +309,6 @@ def run(model, view):
     view.app.MainLoop()
 
 
-def update_view():
+def update():
     pub.sendMessage('UpdateView')
-
-
-
-
-
-
-
-
-
-        ### Big Elements: Panel, Canvas
-        # self.R_plot = MyPlot(self.panel, ylabel='Resistance (Ohms)', xlabel='Pulse #', graph_title='Gradual Set/Reset: R(pulse)', semilogy=True)
-        # self.V_plot = MyPlot(self.panel, ylabel='Magnitude (V or A)', xlabel='Pulse #', graph_title='Pulse Magnitudes')
-
-
-
-
-# class Graph(wx.Graph):
-#     """An embedded matplotlib graph"""
-#     def __init__(self, arg):
-#         super(Graph, self).__init__()
-#         self.arg = arg
-
-
-
-# class MyPlot(object):
-#     def __init__(self, parent, graph_title='Gradual Set: R(pulse)', xlabel='Pulse Number',
-#                     ylabel='Resistance (Ohms)', dimensions=(6.0,5.0), semilogy=False):
-#         self.graph_title = graph_title
-#         self.xlabel = xlabel
-#         self.ylabel = ylabel
-#         self.semilogy = semilogy
-
-#         self.dpi = 100
-#         self.fig = Figure(dimensions, dpi=self.dpi)
-#         self.canvas = FigCanvas(parent, -1, self.fig)
-
-#         self.axes = self.fig.add_subplot(111)
-#         self.axes.set_axis_bgcolor([.05,.05,.05])
-#         self.axes.set_title(self.graph_title, size=12)
-#         self.axes.set_xlabel(self.xlabel, size=10)
-#         self.axes.set_ylabel(self.ylabel, size=10)
-
-#         # self.canvas.mpl_connect('pick_event', self.on_pick)
-
-#         # Create the navigation toolbar, tied to the canvas
-#         self.toolbar = NavigationToolbar(self.canvas)
-#         pylab.setp(self.axes.get_xticklabels(), fontsize=8)
-#         pylab.setp(self.axes.get_yticklabels(), fontsize=8)
-
-#         # plot the data as a line series, and save the reference 
-#         # to the plotted line series
-#         #
-#         if semilogy:
-#             self.plot_data = self.axes.semilogy(np.array([]), 'yo-')[0]
-#                 # , linewidth=1, color=(1, 1, 0),marker='o',markersize=0.5)[0]
-#         else:
-#             self.plot_data = self.axes.plot(np.array([]), 'yo-')[0]
-#             # linewidth=1, color=(1, 1, 0),marker='o',markersize=1)[0]
-
-#     def Refresh(self, x, y):
-#         """ Redraws the plot
-#         """
-#         if self.semilogy:
-#             try:
-#                 ymin = round(min(y[y>0]), 0) - 1
-#             except ValueError:
-#                 ymin = 1
-#         else:
-#             ymin = round(min(y), 0) - 1
-
-#         ymax = round(max(y), 0) + 1
-#         xmin = round(min(x), 0) - 1
-#         xmax = round(max(x), 0) + 1
-
-
-#         self.axes.set_xbound(lower=xmin, upper=xmax)
-#         self.axes.set_ybound(lower=ymin, upper=ymax)
-        
-#         # anecdote: axes.grid assumes b=True if any other flag is
-#         # given even if b is set to False.
-#         # so just passing the flag into the first statement won't
-#         # work.
-#         #
-#         if self.semilogy:
-#             self.axes.yaxis.grid(b=True, which='minor', color=(.2,.2,.2), linestyle=':')
-#             self.axes.grid(b=True, which='major', color='gray', linestyle=':')
-#             self.axes.minorticks_on()
-#         else:
-#             self.axes.grid(b=True, which='major', color='gray')
-
-#         # self.axes.grid(True, color='gray')
-#         # Using setp here is convenient, because get_xticklabels
-#         # returns a list over which one needs to explicitly 
-#         # iterate, and setp already handles this.
-#         #  
-#         pylab.setp(self.axes.get_xticklabels(), 
-#             visible=True)
-        
-#         self.plot_data.set_xdata(x)
-#         self.plot_data.set_ydata(y)
-        
-#         try:
-#             self.canvas.draw()
-#         except ValueError:
-#             print 'Woops!\nSome Drawing SNAFU happened.\n'
 
