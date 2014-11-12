@@ -30,6 +30,12 @@ class Button(wx.Button):
     def _inherit(self, parent):
         wx.Button.__init__(self, parent, label=self.label)
 
+    def _bind(self, controller):
+        self.Bind( wx.EVT_BUTTON, lambda event, obj=obj: controller.on_button(event, obj) )
+
+    def _update(self, model):
+        pass
+
 
 
 class ComboBox(wx.ComboBox):
@@ -42,10 +48,14 @@ class ComboBox(wx.ComboBox):
         self.name = ('combo_'+self.label).replace(' ', '_')
         self.label_name = ('label_'+self.label).replace(' ', '_')
 
-
     def _inherit(self, parent):
         wx.ComboBox.__init__(self, parent, style=wx.CB_READONLY)
 
+    def _bind(self, controller):
+        self.Bind( wx.EVT_COMBOBOX, lambda event, obj=obj: self.on_combo(event, obj) )
+
+    def _update(self, model):
+        self.SetValue( str( getattr(model, self.var_name) ) )
 
 
 class TextCtrl(wx.TextCtrl):
@@ -57,9 +67,15 @@ class TextCtrl(wx.TextCtrl):
         self.name = ('textctrl_'+self.label).replace(' ', '_')
         self.label_name = ('label_'+self.label).replace(' ', '_')
        
-
     def _inherit(self, parent):
         wx.TextCtrl.__init__(self, parent, value='', style=wx.TE_PROCESS_ENTER)
+
+    def _bind(self, controller):
+        self.Bind( wx.EVT_TEXT, lambda event, obj=obj: self.on_textctrl(event, obj) )
+        self.Bind( wx.EVT_TEXT_ENTER, lambda event, obj=obj: self.on_textctrl(event, obj) )
+
+    def _update(self, model):
+        self.SetValue( str( getattr(model, self.var_name) ) )
 
 
 
@@ -114,12 +130,16 @@ class Plot(object):
         pylab.setp(self.axes, **axes_params)
         # pylab.tight_layout()
 
-
     def _inherit(self, parent):
         self.parent = parent
         self.canvas = FigCanvas(self.parent, -1, self.fig)
         # self.toolbar = NavigationToolbar(self.canvas)
 
+    def _bind(self, controller):
+        pass
+
+    def _update(self, model):
+        self.draw( getattr(model, self.x_var), getattr(model, self.y_var))
 
     def draw(self, x, y):
         """ Redraws the plot
