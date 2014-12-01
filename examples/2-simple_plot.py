@@ -1,4 +1,5 @@
 import pyview as pv
+import operator
 
 # Create a model
 class model:
@@ -11,26 +12,17 @@ class model:
         self.ind = []
         self.result = []
 
-
-
-    def add(self):
-        return float(self.first) + float(self.second)
-
-    def subtract(self):
-        return float(self.first) - float(self.second)
-
     def do_it(self):
         if self.op == 'add':
-            res = self.add()
+            res = operator.add(self.first, self.second)
         elif self.op == 'subtract':
-            res = self.subtract()
-
-        print res
+            res = operator.sub(self.first, self.second)
 
         self.count += 1
-        self.ind = range(self.count)
+        self.ind.append(self.count)
         self.result.append(res)
 
+        print('{0} {1} {2} = {3}'.format(self.first, self.op, self.second, res))
         pv.update()
 
 

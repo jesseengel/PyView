@@ -8,20 +8,13 @@ class model:
         self.result = 3
         self.op = 'add'
 
-    def add(self):
-        self.result = float(self.first) + float(self.second)
-        print self.result
-
-    def subtract(self):
-        self.result = float(self.first) - float(self.second)
-        print self.result
-
     def do_it(self):
         if self.op == 'add':
-            self.add()
+            res = operator.add(self.first, self.second)
         elif self.op == 'subtract':
-            self.subtract()
+            res = operator.sub(self.first, self.second)
         
+        print('{0} {1} {2} = {3}'.format(self.first, self.op, self.second, res))
         pv.update()
 
 
@@ -34,7 +27,8 @@ combo_op = pv.ComboBox('op', item_list=['add', 'subtract'], label='Operation:')
 
 view = pv.View([[textctrl_first, textctrl_second, textctrl_result],
                 [combo_op],
-                [button_do_it]], title='Small Calculator')
+                [button_do_it]], 
+                title='Small Calculator')
 
 # Run the program
 pv.run(model, view)
