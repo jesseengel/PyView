@@ -5,7 +5,6 @@ import time
 # Create a model
 class model:
     def __init__(self):
-        self.running = False
         self.want_to_abort = False
         self.count = 0
         self.ind = []
@@ -17,12 +16,12 @@ class model:
 
         while True:
             self.count += 1
-            self.ind = range(self.count)
+            self.ind.append( self.count )
             self.result.append( np.random.randn(1) )
 
             pv.update()
-            time.sleep(0.1)
 
+            time.sleep(0.1)
             if self.want_to_abort: break
 
 
@@ -31,20 +30,19 @@ class model:
 
 
 
-
-
 # Create a view
 axes_params = dict(ylabel='Magnitude',
 				   xlabel='Data Point #',
 				   title='Data Generator')
 plot = pv.Plot(x='ind', y='result', plot_type='plot', axes_params=axes_params) 
+
 button_start = pv.Button('start', label='Start!')
-button_stop = pv.Button('stop', label='Stop')
+button_stop = pv.Button('stop', label='Stop', single_threaded=False)
 
 view = pv.View([[plot],
                 [button_start, button_stop]], title='Random Data!')
 
 # Run the program
-pv.run(model, view, single_threaded=False)
+pv.run(model, view)
 
 

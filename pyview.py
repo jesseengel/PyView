@@ -117,11 +117,12 @@ class Controller(object):
 
     ### BINDING FUNCS ###
     def on_button(self, event, obj):
-        program_name = obj.func_name
-        self.run_program(program_name)
-
-    # def on_abort(self, event, obj):
-    #     self.thread_finished()
+        # Only one thread at a time
+        if self.worker and obj.single_threaded:
+            pass
+        else:
+	        program_name = obj.func_name
+	        self.run_program(program_name)
 
     def on_combo(self, event, obj):
         setattr(self.model, obj.var_name, obj.GetValue())
@@ -130,13 +131,9 @@ class Controller(object):
         setattr(self.model, obj.var_name, obj.GetValue())
 
     def run_program(self, program_name=''):
-        # Only one thread at a time
-        if self.worker and self.single_threaded:
-            pass
-        else:
-            #Create and run thread
-            self.worker = WorkerThread(self.model, program_name)
-            self.worker.start()      
+        #Create and run thread
+        self.worker = WorkerThread(self.model, program_name)
+        self.worker.start()      
 
     ### PUB FUNCS ###
     def update_view(self):
@@ -179,8 +176,9 @@ class WorkerThread(Thread):
 class Button(wx.Button):
     """Extension of the Button Widget.
     Bind to function 'func' and run every time the button is pushed."""
-    def __init__(self, func_name, label=''):
+    def __init__(self, func_name, label='', single_threaded=True):
         self.func_name = func_name
+        self.single_threaded = single_threaded
 
         self.label = label
         self.name = ('button_'+self.label).replace(' ', '_')
@@ -194,26 +192,6 @@ class Button(wx.Button):
 
     def _update(self, model):
         pass
-
-# To allow for stopping single threaded programs
-# class AbortButton(wx.Button):
-#     """Extension of the Button Widget.
-#     Bind to function 'func' and run every time the button is pushed."""
-#     def __init__(self, func_name, label=''):
-#         self.func_name = 'Abort'
-
-#         self.label = label
-#         self.name = ('abort_button_'+self.label).replace(' ', '_')
-#         self.label_name = ('label_'+self.label).replace(' ', '_')
-
-#     def _inherit(self, parent):
-#         wx.Button.__init__(self, parent, label=self.label)
-
-#     def _bind(self, controller):
-#         self.Bind( wx.EVT_BUTTON, lambda event, obj=self: controller.on_abort(event, self) )
-
-#     def _update(self, model):
-#         pass
 
 class ComboBox(wx.ComboBox):
     """Extension of the ComboBox Widget.
@@ -351,7 +329,7 @@ class Plot(object):
 
 
 ###### PYVIEW FUNCTIONS ######
-def run(model, view, single_threaded=True):
+def run(model, view):
     '''Run the pyview program'''
 
     #Check if model is an instantiation of the class
@@ -359,10 +337,10 @@ def run(model, view, single_threaded=True):
         if not isinstance(model, model):
             model = model()
     except TypeError:
-        print '\nModel must be a class instance\n'
+        print '\nModel must be a class, not module\n'
         raise
 
-    controller = Controller(model, view, single_threaded=single_threaded)
+    controller = Controller(model, view)
     view.app.MainLoop()
 
 
