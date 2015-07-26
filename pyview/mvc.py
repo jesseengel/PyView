@@ -119,7 +119,7 @@ class Controller(object):
         self.worker.start()      
 
     def bind_value(self, event, obj):
-        setattr(self.model, obj.var_name, obj.GetValue())
+        setattr(self.model, obj.var_name, obj.dtype(obj.GetValue()))
 
     ### PUB FUNCS ###
     def update_view(self):

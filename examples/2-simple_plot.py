@@ -4,8 +4,8 @@ import operator
 # Create a model
 class model:
     def __init__(self):
-        self.first = 1
-        self.second = 2
+        self.first = 1.0
+        self.second = 2.0
         self.op = 'add'
 
         self.count = 0
@@ -27,14 +27,14 @@ class model:
 
 
 # Create a view
-axes_params = dict(ylabel='Magnitude (V or A)',
-				   xlabel='Pulse #',
-				   title='Pulse Magnitudes')
+axes_params = dict(ylabel='Magnitude',
+				   xlabel='Calc #',
+				   title='History of Calculations')
 
-plot = pv.Plot('ind', 'result', 'plot', axes_params=axes_params) 
+plot = pv.Plot(x='ind', y='result', plot_type='plot', axes_params=axes_params) 
 
-textctrl_first = pv.TextCtrl('first', label='First')
-textctrl_second = pv.TextCtrl('second', label='Second')
+textctrl_first = pv.TextCtrl('first', label='First', dtype=float)
+textctrl_second = pv.TextCtrl('second', label='Second', dtype=float)
 
 button_do_it = pv.Button('do_it', label='Do it!')
 combo_op = pv.ComboBox('op', item_list=['add', 'subtract'], label='Operation:')

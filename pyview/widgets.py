@@ -37,17 +37,21 @@ class Button(wx.Button):
 class ComboBox(wx.ComboBox):
     """Extension of the ComboBox Widget.
     Bind to 'var' and update every time new option selected."""
-    def __init__(self, var_name, item_list, label=''):
+    def __init__(self, var_name, item_list, label='', dtype=str):
         self.var_name = var_name
         self.item_list = item_list
 
         self.label = label
         self.name = ('combo_'+self.label).replace(' ', '_')
         self.label_name = ('label_'+self.label).replace(' ', '_')
+        self.dtype = dtype
 
     def _inherit(self, parent):
         wx.ComboBox.__init__(self, parent, style=wx.CB_READONLY)
-        self.AppendItems(self.item_list)
+        str_list = []
+        for item in self.item_list:
+            str_list.append(str(item))
+        self.AppendItems(str_list)
 
     def _bind(self, controller):
         self.Bind( wx.EVT_COMBOBOX, lambda event, obj=self: controller.bind_value(event, self) )
@@ -59,12 +63,13 @@ class ComboBox(wx.ComboBox):
 class TextCtrl(wx.TextCtrl):
     """Extension of the TextCtrl.
     Bind to variable 'var' and update every time new value entered."""
-    def __init__(self, var_name, label=''):
+    def __init__(self, var_name, label='', dtype=str):
         self.var_name = var_name
 
         self.label = label
         self.name = ('textctrl_'+self.label).replace(' ', '_')
         self.label_name = ('label_'+self.label).replace(' ', '_')
+        self.dtype = dtype
        
     def _inherit(self, parent):
         wx.TextCtrl.__init__(self, parent, value='', style=wx.TE_PROCESS_ENTER)
@@ -141,18 +146,21 @@ class Plot(object):
     def draw(self, x, y):
         """ Redraws the plot
         """
-        if x and y:
+        x = np.array(x)
+        y = np.array(y)
+
+        if x.size and y.size:
             if 'log' in self.plot_type:
                 try:
-                    ymin = round(min(y[y>0]), 0) - 1
+                    ymin = round(np.min(y[y>0]), 0) - 1
                 except ValueError:
                     ymin = 1
             else:
-                ymin = round(min(y), 0) - 1
+                ymin = round(np.min(y), 0) - 1
 
-            ymax = round(max(y), 0) + 1
-            xmin = round(min(x), 0) - 1
-            xmax = round(max(x), 0) + 1
+            ymax = round(np.max(y), 0) + 1
+            xmin = round(np.min(x), 0) - 1
+            xmax = round(np.max(x), 0) + 1
 
 
             self.axes.set_xbound(lower=xmin, upper=xmax)

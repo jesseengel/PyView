@@ -4,5 +4,5 @@ from mvc import *
 
 # remove external access to internal modules
 del widgets, mvc
-del Figure, FigCanvas, NavigationToolbar, WorkerThread, Thread, matplotlib, np, os, pub, pylab, sys, wx
+del Figure, FigCanvas, NavigationToolbar, WorkerThread, Thread, matplotlib, np, pub, pylab, wx
 
