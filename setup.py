@@ -24,8 +24,8 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version='1.0.0',
 
-    description='A Simple GUI creator for python using wxpython. \
-    Combined with numpy, meant as an open source labview replacement.',
+    description='A Simple GUI creator for python using wxpython. '
+    'Combined with numpy, meant as an open source labview replacement.',
     long_description=long_description,
 
     # The project's main homepage.
@@ -47,9 +47,10 @@ setup(
         'Development Status :: 3 - Alpha',
 
         # Indicate who your project is intended for
-        'Intended Audience :: Science/Research'
-        'Topic :: Scientific/Engineering :: Data Aquisition',
-
+        'Intended Audience :: Science/Research',
+        'Topic :: Scientific/Engineering :: Visualization',
+        'Topic :: Utilities',
+        'Topic :: Home Automation',
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: MIT License',
 
