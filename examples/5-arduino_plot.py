@@ -24,24 +24,42 @@ class model:
         self.arduino = None
         self.port = '/dev/tty.usbmodemfd121'
 
-        self.pin = 13
-        self.rate = 0.5
+        self.pin = 0
+        self.rate = 0.1
 
     def load_arduino(self):
         self.arduino = pyfirmata.Arduino(self.port)
 
-
     def start(self):
+        # If there's no board, load one
+        if not self.arduino:
+            self.load_arduino()
+
+        # Initialize iterator and pin (board communication)
         self.want_to_abort = False
+        it = pyfirmata.util.Iterator(self.arduino)
+        it.start()
+        a_pin = self.arduino.analog[self.pin]
+        a_pin.enable_reporting()
+        # Allow board time to settle
+        time.sleep(0.1)
 
         while True:
-            self.arduino.digital[self.pin].write(1)
-            time.sleep(self.rate)
-            self.arduino.digital[self.pin].write(0)
+            value = a_pin.read()
+
+            self.count += 1
+            self.ind.append( self.count )
+            self.result.append(value)
+
+            pv.update()
             time.sleep(self.rate)
      
-            if self.want_to_abort: break
-
+            if self.want_to_abort: 
+                # Shutdown pin and board
+                a_pin.disable_reporting()
+                self.arduino.exit()
+                self.arduino = None
+                break
 
     def stop(self):
         self.want_to_abort = True
@@ -51,24 +69,24 @@ class model:
 # Create a view
 axes_params = dict(ylabel='Magnitude',
                    xlabel='Data Point #',
-                   title='Data Generator')
+                   title='Analog Pin Value')
 plot = pv.Plot(x='ind', y='result', plot_type='plot', axes_params=axes_params) 
 
-textctrl_port = pv.TextCtrl('port', label='Port')
-textctrl_rate = pv.TextCtrl('rate', label='Rate (s)')
+textctrl_port = pv.TextCtrl('port', label='Port:')
+textctrl_rate = pv.TextCtrl('rate', label='Rate (s):', dtype=float)
 
-combo_pin = pv.ComboBox('pin', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+combo_pin = pv.ComboBox('pin', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], dtype=int)
 
 button_start = pv.Button('start', label='Start!')
 button_stop = pv.Button('stop', label='Stop', single_threaded=False)
-button_load_arduino = pv.Button('load_arduino', label='Load', single_threaded=False)
+button_load_arduino = pv.Button('load_arduino', label='Load')
 
 
-view = pv.View([[plot],
+view = pv.View([[textctrl_port, button_load_arduino],
+                [plot],
                 [button_start, button_stop],
-                [textctrl_port, button_load_arduino],
                 [combo_pin, textctrl_rate]],
-                title='Arduino Blinker')
+                title='Arduino Analog-in')
 
 # Run the program
 pv.run(model, view)

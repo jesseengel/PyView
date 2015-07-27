@@ -172,6 +172,6 @@ class Plot(object):
             try:
                 self.canvas.draw()
             except ValueError:
-                print 'Woops!\nSome drawing SNAFU happened.\n'
+                print('Woops!\nSome drawing SNAFU happened.\n')
 
 

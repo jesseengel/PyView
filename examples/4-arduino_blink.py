@@ -1,5 +1,5 @@
 ''' 
-Plots measurments from an analog pin on an arduino. 
+Blink an LED on a digital pin on an arduino. 
 Relies on the python library pyFirmata.
 
 installation:

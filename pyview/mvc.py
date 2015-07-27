@@ -102,7 +102,7 @@ class Controller(object):
 
         ### RUN ###
         self.view.Show()
-        print 'Program Finished Loading!'
+        print('Program Finished Loading!')
 
     ### BINDING FUNCS ###
     def bind_method(self, event, obj):
@@ -166,7 +166,7 @@ def run(model, view):
         if not isinstance(model, model):
             model = model()
     except TypeError:
-        print '\nModel must be a class, not module\n'
+        print('\nModel must be a class, not module\n')
         raise
 
     controller = Controller(model, view)
