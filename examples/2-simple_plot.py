@@ -1,8 +1,8 @@
-import pyview as pv
 import operator
+import pyview as pv
 
 # Create a model
-class model:
+class Model:
     def __init__(self):
         self.first = 1.0
         self.second = 2.0
@@ -31,7 +31,7 @@ axes_params = dict(ylabel='Magnitude',
 				   xlabel='Calc #',
 				   title='History of Calculations')
 
-plot = pv.Plot(x='ind', y='result', plot_type='plot', axes_params=axes_params) 
+plot = pv.Plot(x='ind', y='result', plot_type='plot', axes_params=axes_params)
 
 textctrl_first = pv.TextCtrl('first', label='First', dtype=float)
 textctrl_second = pv.TextCtrl('second', label='Second', dtype=float)
@@ -43,6 +43,8 @@ view = pv.View([[plot],
 				[textctrl_first, textctrl_second],
                 [combo_op],
                 [button_do_it]], title='Small Graph Calculator')
+
+model = Model()
 
 # Run the program
 pv.run(model, view)

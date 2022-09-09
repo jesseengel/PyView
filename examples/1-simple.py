@@ -1,8 +1,8 @@
-import pyview as pv
 import operator
+import pyview as pv
 
 # Create a model
-class model:
+class Model:
     def __init__(self):
         self.first = 1.0
         self.second = 2.0
@@ -14,7 +14,7 @@ class model:
             self.result = operator.add(self.first, self.second)
         elif self.op == 'subtract':
             self.result = operator.sub(self.first, self.second)
-        
+
         print('{0} {1} {2} = {3}'.format(self.first, self.op, self.second, self.result))
         pv.update()
 
@@ -29,8 +29,9 @@ combo_op = pv.ComboBox('op', item_list=['add', 'subtract'], label='Operation:')
 
 view = pv.View([[textctrl_first, textctrl_second, textctrl_result],
                 [combo_op],
-                [button_do_it]], 
+                [button_do_it]],
                 title='Small Calculator')
+model = Model()
 
 # Run the program
 pv.run(model, view)

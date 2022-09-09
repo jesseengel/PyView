@@ -8,14 +8,15 @@ installation:
 3) make sure the port in the gui is correct for your device
 '''
 
-import pyview as pv
-
-import pyfirmata
-import numpy as np
 import time
 
+import numpy as np
+import pyfirmata
+
+import pyview as pv
+
 # Create a model
-class model:
+class Model:
     def __init__(self):
         self.want_to_abort = False
         self.count = 0
@@ -67,6 +68,8 @@ view = pv.View([[textctrl_port, button_load_arduino],
                 [button_start, button_stop],
                 [combo_pin, textctrl_rate]],
                 title='Arduino Blinker')
+
+model = Model()
 
 # Run the program
 pv.run(model, view)

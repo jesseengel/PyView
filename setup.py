@@ -76,7 +76,22 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['pyfirmata'],
+    install_requires=[
+        'cycler==0.11.0',
+        'fonttools==4.37.1',
+        'kiwisolver==1.4.4',
+        'matplotlib==3.5.3',
+        'numpy==1.23.2',
+        'packaging==21.3',
+        'Pillow==9.2.0',
+        'pyFirmata==1.1.0',
+        'pyparsing==3.0.9',
+        'pyserial==3.5',
+        'python-dateutil==2.8.2',
+        'pythonw==3.0.3',
+        'six==1.16.0',
+        'wxPython==4.2.0',
+    ]
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,

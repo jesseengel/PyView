@@ -1,5 +1,5 @@
-''' 
-Plots measurments from an analog pin on an arduino. 
+'''
+Plots measurments from an analog pin on an arduino.
 Relies on the python library pyFirmata.
 
 installation:
@@ -8,14 +8,15 @@ installation:
 3) make sure the port in the gui is correct for your device
 '''
 
-import pyview as pv
-
-import pyfirmata
-import numpy as np
 import time
 
+import numpy as np
+import pyfirmata
+
+import pyview as pv
+
 # Create a model
-class model:
+class Model:
     def __init__(self):
         self.want_to_abort = False
         self.count = 0
@@ -53,8 +54,8 @@ class model:
 
             pv.update()
             time.sleep(self.rate)
-     
-            if self.want_to_abort: 
+
+            if self.want_to_abort:
                 # Shutdown pin and board
                 a_pin.disable_reporting()
                 self.arduino.exit()
@@ -70,7 +71,7 @@ class model:
 axes_params = dict(ylabel='Magnitude',
                    xlabel='Data Point #',
                    title='Analog Pin Value')
-plot = pv.Plot(x='ind', y='result', plot_type='plot', axes_params=axes_params) 
+plot = pv.Plot(x='ind', y='result', plot_type='plot', axes_params=axes_params)
 
 textctrl_port = pv.TextCtrl('port', label='Port:')
 textctrl_rate = pv.TextCtrl('rate', label='Rate (s):', dtype=float)
@@ -86,7 +87,9 @@ view = pv.View([[textctrl_port, button_load_arduino],
                 [plot],
                 [button_start, button_stop],
                 [combo_pin, textctrl_rate]],
-                title='Arduino Analog-in')
+               title='Arduino Analog-in')
+
+model = Model()
 
 # Run the program
 pv.run(model, view)

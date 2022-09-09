@@ -8,7 +8,7 @@ except ImportError:
 import numpy as np
 from threading import Thread
 
-import widgets
+from pyview import widgets
 
 ###### PYVIEW CLASSES ######
 

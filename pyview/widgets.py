@@ -121,7 +121,7 @@ class Plot(object):
             self.axes.minorticks_on()
         else:
             self.axes.grid(b=True, which='major', color='gray')
-        pylab.setp(self.axes, axis_bgcolor=[.05,.05,.05])
+        pylab.setp(self.axes, facecolor=[.05,.05,.05])
 
         # self.axes.grid(True, color='gray')
         # Using setp here is convenient, because get_xticklabels
