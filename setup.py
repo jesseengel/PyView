@@ -12,9 +12,6 @@ from os import path
 
 here = path.abspath(path.dirname(__file__))
 
-# Get the long description from the relevant file
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-    long_description = f.read()
 
 setup(
     name='pyview',
@@ -24,9 +21,9 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version='1.1.0',
 
-    description='A Simple GUI creator for python using wxpython. '
-    'Combined with numpy, meant as an open source labview replacement.',
-    long_description=long_description,
+    description=('A Simple GUI creator for python using wxpython. '
+                 'Combined with numpy, meant as an open source '
+                 'labview replacement.'),
 
     # The project's main homepage.
     url='https://github.com/jesseengel/PyView',
