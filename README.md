@@ -1,6 +1,9 @@
 PyView
 ======
 
+__Disclaimer: This code is not actively maintained, and will likely develop breaking dependencies. I hope you find it useful as a reference.__
+
+
 The philosophy behind making PyView is that there should be a good LabView replacement for Python.
 NumPy is a great replacement for Matlab, but too many industry and academic research labs are still stuck using LabView because it easily interfaces with hardware and creates GUIs that plot in realtime. 
 
