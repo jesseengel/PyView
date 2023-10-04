@@ -80,7 +80,7 @@ setup(
         'matplotlib==3.5.3',
         'numpy==1.23.2',
         'packaging==21.3',
-        'Pillow==9.2.0',
+        'Pillow==10.0.1',
         'pyFirmata==1.1.0',
         'pyparsing==3.0.9',
         'pyserial==3.5',
